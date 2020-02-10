@@ -1,9 +1,15 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: User Model */
+
+//Require Mongoose, validator, bcrypt, jwt, and task model
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
 
+//Create User Mongoose Schema
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -62,6 +68,7 @@ userSchema.virtual('tasks', {
 })
 
 //Return Public Data
+//Removes fields not needed for public view when return JSON
 userSchema.methods.toJSON = function () {
     const user = this
     const userObject = user.toObject()
@@ -99,7 +106,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
     return user
 }
 
-//Has the plain text password before saving
+//Hash the plain text password before saving
 userSchema.pre('save', async function (next) {
     const user = this
 
@@ -117,6 +124,8 @@ userSchema.pre('remove', async function (next) {
     next()
 })
 
+//Pass mongoose user schema to mongoose model
 const User = mongoose.model('User', userSchema)
 
+//export User model
 module.exports = User

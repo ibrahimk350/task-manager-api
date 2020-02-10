@@ -1,3 +1,8 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: Test cases for Tasks */
+
+//Require supertest, app, task model, users and task data
 const request = require('supertest')
 const app = require('../src/app')
 const Task = require('../src/models/task')
@@ -11,8 +16,10 @@ const {
     taskThree,
     setupDatabase} = require('./fixtures/db')
 
+//Setup Database before each suite test
 beforeEach(setupDatabase)
 
+//Create a task for user one
 test('Should create task for user', async() => {
     const response = await request(app)
         .post('/tasks')
@@ -27,6 +34,7 @@ test('Should create task for user', async() => {
     expect(task.completed).toEqual(false)
 })
 
+//Get all tasks for user one
 test('Should get all tasks for user One', async() => {
     const response = await request(app)
         .get('/tasks')
@@ -36,6 +44,7 @@ test('Should get all tasks for user One', async() => {
     expect(response.body.length).toEqual(2)
 })
 
+//User One cannot delete task for user two
 test('Should not delete other users tasks', async() => {
     const response = await request(app)
         .delete(`/tasks/${taskOne._id}`)

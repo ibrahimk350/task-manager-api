@@ -1,3 +1,8 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: User Router */
+
+//Require express, User model, auth middleware, sharp, emails, and express router
 const express = require('express')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
@@ -6,6 +11,8 @@ const sharp = require('sharp')
 const { sendWelcomeEmail, sendCancelationEmail } = require('../emails/account')
 const router = new express.Router()
 
+//HTTP POST for users
+//Creates a new user
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
 
@@ -20,6 +27,8 @@ router.post('/users', async (req, res) => {
     }
 })
 
+//HTTP POST for user
+//Login to Verify User
 router.post('/users/login', async(req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
@@ -30,6 +39,8 @@ router.post('/users/login', async(req, res) => {
     }
 })
 
+//HTTP POST for user
+//Logout user
 router.post('/users/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
@@ -44,6 +55,8 @@ router.post('/users/logout', auth, async (req, res) => {
     }
 })
 
+//HTTP POST for user
+//Logout User - Destroy all login tokens
 router.post('/users/logoutAll', auth, async (req, res) => {
     try {
         req.user.tokens = []
@@ -54,10 +67,14 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     }
 })
 
+//HTTP GET for user
+//Get User Profile
 router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
+//HTTP PATCH for user
+//Update User Profile
 router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
@@ -78,6 +95,8 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 })
 
+//HTTP DELETE for user
+//Deletes a user (only deletes the logged in user)
 router.delete('/users/me', auth, async (req, res) => {
     try {
         await req.user.remove()
@@ -88,7 +107,7 @@ router.delete('/users/me', auth, async (req, res) => {
     }
 })
 
-//Upload Profile pic
+//Multer Library for file uploads
 const upload = multer({
     limits: {
         fileSize: 1000000
@@ -101,6 +120,9 @@ const upload = multer({
         cb(undefined, true)
     }
 })
+
+//HTTP POST for user
+//Allow user to upload profile pic
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
     req.user.avatar = buffer
@@ -136,4 +158,5 @@ router.get('/users/:id/avatar', async (req, res) => {
     }
 })
 
+//export user router
 module.exports = router

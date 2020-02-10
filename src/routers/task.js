@@ -1,8 +1,15 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: Task Router */
+
+//Require express, task model, auth middleware, and express router
 const express = require('express')
 const Task = require('../models/task')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 
+//HTTP POST for Tasks
+//Creates tasks
 router.post('/tasks', auth, async (req, res) => {
     const task = new Task({
         ...req.body,
@@ -20,6 +27,8 @@ router.post('/tasks', auth, async (req, res) => {
 // GET /tasks?completed=false
 // GET /tasks?limit=10&skip=10
 // GET /tasks?sortBy=createdAt:asc
+//HTTP GET for tasks
+//Gets all the tasks for authenticated user
 router.get('/tasks', auth, async (req, res) => {
     const match = {}
     const sort = {}
@@ -49,6 +58,7 @@ router.get('/tasks', auth, async (req, res) => {
     }
 })
 
+//HTTP GET specific task by id for user
 router.get('/tasks/:id', auth, async (req, res) => {
     const _id = req.params.id
 
@@ -65,6 +75,7 @@ router.get('/tasks/:id', auth, async (req, res) => {
     }
 })
 
+//HTTP PATCH update a task by id for user
 router.patch('/tasks/:id', auth, async(req, res) => {
     const _id = req.params.id
     const updates = Object.keys(req.body)
@@ -91,6 +102,7 @@ router.patch('/tasks/:id', auth, async(req, res) => {
     }
 })
 
+//HTTP DELETE delete a task by id for user
 router.delete('/tasks/:id', auth, async (req, res) => {
     const _id = req.params.id
 
@@ -107,4 +119,5 @@ router.delete('/tasks/:id', auth, async (req, res) => {
     }
 })
 
+//Export router
 module.exports = router

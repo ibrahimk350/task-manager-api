@@ -1,6 +1,12 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: Middleware authentation for HTTP requests using jsonwebtoken library */
+
+//Require JWT/User model
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
+//Create auth middleware function
 const auth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '')
@@ -19,4 +25,5 @@ const auth = async (req, res, next) => {
     }
 }
 
+//export auth
 module.exports = auth

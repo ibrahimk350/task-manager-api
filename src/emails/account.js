@@ -1,7 +1,14 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: Email configuration for sending emails using Sendgrid Library */
+
+//Require sendgrid mail
 const sgMail = require('@sendgrid/mail')
 
+//Set the API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+//Create Welcome Email
 const sendWelcomeEmail = (email, name) => {
     sgMail.send({
         to: email,
@@ -11,6 +18,7 @@ const sendWelcomeEmail = (email, name) => {
     })
 }
 
+//Create Cancellation Email
 const sendCancelationEmail = (email, name) => {
     sgMail.send({
         to: email,
@@ -20,6 +28,7 @@ const sendCancelationEmail = (email, name) => {
     })
 }
 
+//Export Emails
 module.exports = {
     sendWelcomeEmail,
     sendCancelationEmail

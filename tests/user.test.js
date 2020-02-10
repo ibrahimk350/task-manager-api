@@ -1,10 +1,17 @@
+/* Author: Ibrahim Khalid
+Date: 2020-02-10
+Description: Test cases for User */
+
+//Require request, app, user model, and users test data
 const request = require('supertest')
 const app = require('../src/app')
 const User = require('../src/models/user')
 const {userOneId, userOne, setupDatabase} = require('./fixtures/db')
 
+//Setup Database before each suite test
 beforeEach(setupDatabase)
 
+//Signup a new user
 test('Should signup a new user', async () => {
     const response = await request(app).post('/users').send({
         name: 'Johnathon Testing',
@@ -29,6 +36,7 @@ test('Should signup a new user', async () => {
     expect(user.password).not.toBe('Johnathon@2020')
 })
 
+//Login User
 test('Should Login existing user', async() => {
     const response = await request(app).post('/users/login').send({
         email: userOne.email,
@@ -39,6 +47,8 @@ test('Should Login existing user', async() => {
     expect(response.body.token).toBe(user.tokens[1].token)
 })
 
+//Login user which does not exist
+//Wrong username/password
 test('Should not login nonexistent User', async() => {
     await request(app).post('/users/login').send({
         email: userOne.email,
@@ -46,6 +56,7 @@ test('Should not login nonexistent User', async() => {
     }).expect(400)
 })
 
+//Get profile for Logged In user one
 test('Should get profile for user', async () => {
     await request(app)
         .get('/users/me')
@@ -54,6 +65,7 @@ test('Should get profile for user', async () => {
         .expect(200)
 })
 
+//Get Profile for unauthenticated user
 test('Should not get profile for unauthenticated user', async() => {
     await request(app)
         .get('/users/me')
@@ -61,6 +73,7 @@ test('Should not get profile for unauthenticated user', async() => {
         .expect(401)
 })
 
+//Delete user account for authenticated user
 test('Should delete account for user', async() => {
     await request(app)
         .delete('/users/me')
@@ -72,6 +85,7 @@ test('Should delete account for user', async() => {
     expect(user).toBeNull()
 })
 
+//Delete user account for unauthenticated user
 test('Should not delete account for unauthenticated user', async() => {
     await request(app)
         .delete('/users/me')
@@ -79,6 +93,7 @@ test('Should not delete account for unauthenticated user', async() => {
         .expect(401)
 })
 
+//Upload avatar image
 test('Should upload avatar image', async() => {
     await request(app)
         .post('/users/me/avatar')
@@ -90,6 +105,7 @@ test('Should upload avatar image', async() => {
     expect(user.avatar).toEqual(expect.any(Buffer))
 })
 
+//Update valid user fields
 test('Should update valid user fields', async() => {
     await request(app)
         .patch('/users/me')
@@ -103,6 +119,7 @@ test('Should update valid user fields', async() => {
     expect(user.name).toEqual('Ibby Testing')
 })
 
+//Should not update invalid user fields
 test('Should not update invalid user fields', async() => {
     await request(app)
         .patch('/users/me')
